@@ -33,6 +33,10 @@ blastBox = (box) => {
     for (let i = 0; i < box.blastParticles; i = i + 100) {
         // let speed=(Math.random() - 0.5) * 2;
         let blastParticle = new Particle(box.x + 17.5, box.y + 17.5, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, 100, 'yellow');
+     
+        let blastAudio = new Audio('img/Blast.mp3');
+        blastAudio.volume = 0.7;
+        blastAudio.play();
 
         particles.push(blastParticle);
     }
@@ -616,6 +620,7 @@ setInterval(() => {
         } else {
             particles.push(new Particle(mouse.x, mouse.y - 100, 0, 10, 1, 'blue'));
         }
+        
         isAnimate=false;
     }
     
@@ -624,7 +629,18 @@ setInterval(() => {
 //    powerPlay=!powerPlay;
 //}, 3000);
 
+let audio = new Audio('img/Toro track.mp3');
+audio.volume=0.025;
+audio.loop = true;
 
+
+
+   
+
+const playTrack= ()=> {
+    audio.play().then(x=>playTrack())
+    .catch(e => console.log("audio not supported"));
+}
 
 const startButton = document.getElementById("startButton");
 startButton.addEventListener("click", function (event) {
@@ -638,6 +654,8 @@ startButton.addEventListener("click", function (event) {
     const controller = document.getElementById("controller");
     controller.style = "display: flex;";
     resetGame();
+    audio.play();
+    // playTrack();
     requestAnimationFrame(animate);
 });
 
