@@ -35,7 +35,7 @@ blastBox = (box) => {
         let blastParticle = new Particle(box.x + 17.5, box.y + 17.5, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, 100, 'yellow');
      
         let blastAudio = new Audio('img/Blast.mp3');
-        blastAudio.volume = 0.7;
+        blastAudio.volume = 0.9;
         blastAudio.play();
 
         particles.push(blastParticle);
@@ -630,7 +630,7 @@ setInterval(() => {
 //}, 3000);
 
 let audio = new Audio('img/Toro track.mp3');
-audio.volume=0.05;
+audio.volume=0.3;
 audio.loop = true;
 
 
