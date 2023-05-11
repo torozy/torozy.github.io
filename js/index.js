@@ -630,7 +630,7 @@ setInterval(() => {
 //}, 3000);
 
 let audio = new Audio('img/Toro track.mp3');
-audio.volume=0.025;
+audio.volume=0.05;
 audio.loop = true;
 
 
@@ -659,4 +659,6 @@ startButton.addEventListener("click", function (event) {
     requestAnimationFrame(animate);
 });
 
-
+window.addEventListener('load', () => {
+    startButton.disabled =false;
+  })
