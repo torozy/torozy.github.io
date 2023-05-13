@@ -629,7 +629,7 @@ setInterval(() => {
 //    powerPlay=!powerPlay;
 //}, 3000);
 
-let audio = new Audio('img/Toro track.mp3');
+let audio = new Audio('img/space-asteroids.mp3');
 audio.volume=0.3;
 audio.loop = true;
 
