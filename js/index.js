@@ -108,53 +108,6 @@ const sprite = document.getElementById("tank");
 
 let fireAnimateToggle = true;
 
-
-
-drawGun = (x) => {
-
-    if (powerPlay) {
-        document.getElementById("popup").style = "display: block;animation:fade 3000ms;-webkit-animation:fade 3000ms;";
-
-        // display spaceship
-        ctx.drawImage(shipWebElement, 0, 0, 112, 75, mouse.x - 46, mouse.y - 80, 92, 55);
-
-        
-        // displayt fire exaust
-        if(fireAnimateToggle){
-            ctx.drawImage(sprite, 831, 0, 14, 31, mouse.x - 8, mouse.y - 25, 16, 15);
-        }else{
-            ctx.drawImage(sprite, 834, 299, 14, 31, mouse.x - 8, mouse.y - 25, 16, 20);
-        }
-
-    } else {
-
-        document.getElementById("popup").style = "display: none;";
-
-         // display spaceship
-         ctx.drawImage(shipWebElement, 0, 0, 112, 75, mouse.x - 46, mouse.y - 80, 92, 55);
-
-
-        
-        // displayt fire exaust
-        if(exaustCounter < 5){
-            ctx.drawImage(sprite, 831, 0, 14, 31, mouse.x - 8, mouse.y - 25, 16, 15);
-            exaustCounter++;
-        }else if (exaustCounter <10){
-            ctx.drawImage(sprite, 834, 299, 14, 31, mouse.x - 8, mouse.y - 25, 16, 20);
-            exaustCounter++;
-        }else{
-            exaustCounter=0;
-        }
-
-        fireAnimateToggle=!fireAnimateToggle;
-
-        // draw_tank(ctx, 10, 10);
-
-    }
-
-
-}
-
 animate = () => {
     if(moveLeftFlag && mouse.x > 0 ){
         mouse.x = mouse.x - 2.5;
@@ -191,7 +144,7 @@ animate = () => {
 
     ctx.save();
 
-    drawGun();
+    spaceShip.draw();
     let boxesLength = boxes.length, particlesLength = particles.length;
     if (boxesLength > 3) {
         powerPlay = true;
@@ -351,6 +304,55 @@ class Particle {
     }
 }
 
+class SpaceShip {
+    constructor() {
+    }
+    update() {
+    }
+    draw() {
+        if (powerPlay) {
+            document.getElementById("popup").style = "display: block;animation:fade 3000ms;-webkit-animation:fade 3000ms;";
+    
+            // display spaceship
+            ctx.drawImage(shipWebElement, 0, 0, 112, 75, mouse.x - 25, mouse.y - 80, 50, 28);
+    
+            
+            // displayt fire exaust
+            if(fireAnimateToggle){
+                ctx.drawImage(sprite, 831, 0, 14, 31, mouse.x - 8, mouse.y - 25, 16, 15);
+            }else{
+                ctx.drawImage(sprite, 834, 299, 14, 31, mouse.x - 8, mouse.y - 25, 16, 20);
+            }
+    
+        } else {
+    
+            document.getElementById("popup").style = "display: none;";
+    
+             // display spaceship
+             ctx.drawImage(shipWebElement, 0, 0, 112, 75, mouse.x - 25, mouse.y - 80, 50, 28);
+    
+    
+            
+            // displayt fire exaust
+            if(exaustCounter < 5){
+                ctx.drawImage(sprite, 831, 0, 14, 31, mouse.x - 8, mouse.y - 25, 16, 15);
+                exaustCounter++;
+            }else if (exaustCounter <10){
+                ctx.drawImage(sprite, 834, 299, 14, 31, mouse.x - 8, mouse.y - 25, 16, 20);
+                exaustCounter++;
+            }else{
+                exaustCounter=0;
+            }
+    
+            fireAnimateToggle=!fireAnimateToggle;
+    
+            // draw_tank(ctx, 10, 10);
+    
+        }
+        
+    }
+}
+
 class Box {
     constructor() {
         this.value = this.generateValue();
@@ -493,6 +495,10 @@ let exaustCounter = 0;
 let backgroundAnimationY = -256;
 //make it true for swipe instruction
 let controllerIntructionFlag = window.localStorage.getItem("controllerIntructionFlag") || false;
+
+//construct Space Ship
+
+const spaceShip = new SpaceShip();
 
 // const initSpaceShip = (e) => {
 
