@@ -30,7 +30,8 @@ getMousePos = (canvas, evt) => {
 }
 
 blastBox = (box) => {
-    for (let i = 0; i < box.blastParticles; i = i + 100) {
+    // for (let i = 0; i < box.blastParticles; i = i + 100) {
+        // console.log("inside blast box")
         // let speed=(Math.random() - 0.5) * 2;
         let blastParticle = new Particle(box.x + 17.5, box.y + 17.5, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, 100, 'yellow');
      
@@ -39,7 +40,8 @@ blastBox = (box) => {
         blastAudio.play();
 
         particles.push(blastParticle);
-    }
+    // }
+
 }
 
 drawScoreBoard = () => {
@@ -49,6 +51,8 @@ drawScoreBoard = () => {
 }
 
 gameOver = () => {
+
+    audio.pause(); 
 
     if(score > maxScore){
         window.localStorage.setItem("maxScore",score);
@@ -124,20 +128,20 @@ animate = () => {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     //animate background
     if(backgroundAnimationY<=0){
-    for(let bgy = backgroundAnimationY; bgy < ctx.canvas.height ;bgy = bgy+256){
-       for(let bgx = 0; bgx < ctx.canvas.width ;bgx = bgx+256){
-            ctx.drawImage(background, 0, 0,256,256,bgx,bgy,256,256);
+    for(let bgy = backgroundAnimationY; bgy < ctx.canvas.height ;bgy = bgy+background.height){
+       for(let bgx = 0; bgx < ctx.canvas.width ;bgx = bgx+background.width){
+            ctx.drawImage(background, 0, 0,background.width,background.height,bgx,bgy,background.width,background.height);
         }   
     }
     backgroundAnimationY++;
 
     }else{
-        for(let bgy = backgroundAnimationY; bgy < ctx.canvas.height ;bgy = bgy+256){
-            for(let bgx = 0; bgx < ctx.canvas.width ;bgx = bgx+256){
-                 ctx.drawImage(background, 0, 0,256,256,bgx,bgy,256,256);
+        for(let bgy = backgroundAnimationY; bgy < ctx.canvas.height ;bgy = bgy+background.height){
+            for(let bgx = 0; bgx < ctx.canvas.width ;bgx = bgx+background.width){
+                 ctx.drawImage(background, 0, 0,background.width,background.height,bgx,bgy,background.width,background.height);
              }   
          }
-        backgroundAnimationY = -256;
+        backgroundAnimationY = -background.height;
     }
 
     //power play popup
@@ -152,9 +156,7 @@ animate = () => {
 
     spaceShip.draw();
     let boxesLength = boxes.length, particlesLength = particles.length;
-    if (boxesLength > 3) {
-        powerPlay = true;
-    }
+    
     for (let i = 0; i < boxesLength; i++) {
         for (let j = 0; j < particlesLength; j++) {
             let boxX = boxes[i].x, boxY = boxes[i].y, particleX = particles[j].x, particleY = particles[j].y;
@@ -173,15 +175,27 @@ animate = () => {
                     damageY: particleY,
                     animateIndex: 6
                 });
+
+                let laserBlastAudio = new Audio('img/laser1.mp3');
+                laserBlastAudio.volume = 0.9;
+                laserBlastAudio.play();
+
                 particles.splice(j, 1);
                 particlesLength--;
                 j--;
                 score++;
                 if (boxes[i].value === 0 || boxes[i].value < 0) {
-                    blastBox(boxes[i]);
-                    boxes.splice(i, 1);
-                    boxesLength--;
-                    break;
+                    if(boxes[i].isDistroyed){
+                        blastBox(boxes[i]);
+                        boxes.splice(i, 1);
+                        boxesLength--;
+                        break;
+                    }else{
+                        boxes[i].distroySequence=true;
+                        score--;
+                        break;
+                    }
+                    
                 }
             }
         }
@@ -191,6 +205,10 @@ animate = () => {
                 return;
             }
             boxes[i].draw();
+        }
+
+        if (boxes[i] && boxes[i].y > ctx.canvas.height*0.5) {
+            powerPlay = true;
         }
 
         if (score > level * 10) {
@@ -267,168 +285,6 @@ const drawArrow = (ctx, startX, startY, endX, endY, width, color) => {
     // ctx.restore();
 }
 
-class Particle {
-    constructor(x, y, speedX, speedY, value, color) {
-        this.x = x;
-        this.y = y;
-        this.speedY = speedY;
-        this.speedX = speedX;
-        this.value = value;
-        this.color = color;
-    }
-
-    update() {
-        this.checkBoundary();
-        this.y -= this.speedY;
-        this.x -= this.speedX;
-    }
-    draw() {
-
-        if (this.color === 'yellow') {
-            // draw ball
-            const context = ctx;
-            context.beginPath();
-            context.fillStyle = "hsl(110, 100%, 30%)";
-            context.strokeStyle = "hsl(110, 100%, 30%)";
-            let lineWidth = context.lineWidth = 0.5;
-            context.globalAlpha = 0.5;
-            ctx.fillStyle = this.color;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
-            ctx.fill();
-            context.globalAlpha = 1.0;
-            context.stroke();
-        } else if (this.color === 'red') { 
-            ctx.drawImage(redBulletWebElemnt, 0, 0, 15, 51, this.x - 2.5, this.y, 5, 20);
-        }else {
-            ctx.drawImage(sprite, 856, 421, 9, 54, this.x - 2.5, this.y, 2, 10);
-        }
-
-
-        this.update();
-    }
-    checkBoundary() {
-        if (this.x >= window.innerWidth || this.x <= 0) {
-            this.speedX = -1 * this.speedX;
-        }
-        if (this.y > window.innerHeight) {
-            this.speedY = -1 * this.speedY;
-        }
-    }
-}
-
-class SpaceShip {
-    constructor() {
-        this.width = 50;
-        this.height = 28;
-        this.exhaustWidth = 5 ;
-        this.exhaustHeight = 10 ;
-        this.startX=mouse.x - (this.width/2);
-        this.startY=mouse.y ;
-        this.exaustCounter = 0;
-        // this.endX=;
-        // this.endY=;
-    }
-    draw() {
-        this.startX=mouse.x - (this.width/2);
-        this.startY=mouse.y ;
-     
-        // display spaceship
-        ctx.drawImage(shipWebElement, 0, 0, 112, 75, this.startX, this.startY, this.width, this.height);
-
-        // displayt fire exaust
-        if(this.exaustCounter < 5){
-            ctx.drawImage(sprite, 831, 0, 14, 31, mouse.x - (this.exhaustWidth/2), mouse.y + this.height, this.exhaustWidth, this.exhaustHeight+4);
-            this.exaustCounter++;
-        }else if (this.exaustCounter <10){
-            ctx.drawImage(sprite, 834, 299, 14, 31, mouse.x - (this.exhaustWidth/2), mouse.y + this.height, this.exhaustWidth, this.exhaustHeight);
-            this.exaustCounter++;
-        }else{
-            this.exaustCounter=0;
-        }
-
-        
-    }
-}
-
-class Box {
-    constructor() {
-        this.value = this.generateValue();
-        this.initHealth =  this.value;
-        this.blastParticles = this.value;
-        let tmpValue = (Math.random() * window.innerWidth);
-        this.x = tmpValue > 70 ? tmpValue - 70 : tmpValue;
-        this.y = 0;
-        this.speedY = 1;
-        this.ang = 0
-        this.rotationSpeed = Math.random() > 0.5 ? -5*Math.random() : 5*Math.random() ;
-        this.damageBlastList=[];
-    }
-    generateValue(){
-        let tmp = boxMaxValue;
-        if(boxes.length && boxes[boxes.length-1] > (boxMaxValue*0.5)){
-            tmp = 3;
-        }
-        return Math.floor(Math.random() * (tmp - boxMinValue) + boxMinValue);
-    }
-    update() {
-        this.y += this.speedY;
-    }
-    draw() {
-        
-        //draw meteor
-        let size = getMeteriodSize(this.value);
-
-        // draw health
-
-        ctx.globalAlpha = 0.5;
-        ctx.fillStyle = "grey";
-        ctx.fillRect(this.x - healthBarOffsetX, this.y - healthBarOffsetY, 7, 2);
-        ctx.fillStyle = "hsl(110, 100%, 30%)";
-        ctx.fillRect(this.x - healthBarOffsetX, this.y - healthBarOffsetY, 7 - (7 * (this.initHealth - this.value) / this.initHealth), 2);
-
-        ctx.globalAlpha = 1.0;
-        ctx.stroke();
-
-
-        ctx.save()
-        var pos = {x: (this.x + (size)*10), y: (this.y + (size)*10)}
-        ctx.translate(pos.x ,pos.y)    
-        ctx.rotate(Math.PI / 180 * (this.ang += this.rotationSpeed))
-        
-        if (size === 5) {
-
-            ctx.drawImage(sprite, 0, 520, 120, 98, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
-        } else if (size === 4) {
-
-            ctx.drawImage(sprite, 518, 810, 89, 82, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
-        } else if (size === 3) {
-
-            ctx.drawImage(sprite, 327, 452, 98, 96, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
-        } else if (size === 2) {
-           
-            ctx.drawImage(sprite, 0, 520, 120, 98, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
-        } else {
-            ctx.drawImage(meteor, 0, 0, 98, 96, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
-        }
-
-        ctx.restore()
-
-        this.blastParticles = this.damageBlastList.forEach((damageCoordinates, index, arr) => {
-            
-            if(damageCoordinates.animateIndex>0){
-                drawSpriteFrame(explosionWebElemnt,damageCoordinates.animateIndex,6,
-                    {x:damageCoordinates.damageX,
-                     y:damageCoordinates.damageY,
-                     width:size*5,
-                     height:size*5});
-            }
-            arr[index] = {...damageCoordinates,animateIndex : damageCoordinates.animateIndex-1};
-          })
-
-        this.update();
-    }
-}
 
 const drawSpriteFrame = (spriteElement,frame,maxFrame,coordinates) => {
 
@@ -473,6 +329,7 @@ resetGame = () => {
     gameOverFlag = false;
 
     document.getElementById("level").innerHTML = level;
+    audio.play();
 
 }
 
@@ -490,6 +347,8 @@ const background = document.getElementById("background");
 const swipeInstruction = document.getElementById("swipeInstruction");
 const redBulletWebElemnt = document.getElementById("red-bullet");
 const explosionWebElemnt = document.getElementById("explosion");
+const afterBlastParticleWebElemnt = document.getElementById("sun");
+
 
 
 const ctx = canvasElement.getContext("2d");
@@ -604,6 +463,9 @@ setInterval(() => {
     if(isAnimate){
         boxes.push(new Box());
         isAnimate=false;
+        audio.play();
+    }else{
+        audio.pause();
     }
 }, 3000);
 
