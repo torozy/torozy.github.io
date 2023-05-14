@@ -140,7 +140,13 @@ animate = () => {
         backgroundAnimationY = -256;
     }
 
+    //power play popup
     
+    if (powerPlay) {
+        document.getElementById("popup").style = "display: block;animation:fade 3000ms;-webkit-animation:fade 3000ms;";
+    } else {
+        document.getElementById("popup").style = "display: none;";
+    }
 
     ctx.save();
 
@@ -160,8 +166,13 @@ animate = () => {
                 continue;
             }
 
-            if (boxX < particleX && particleX < (boxX + (6 - getMeteriodSize(boxes[i].value))*20) && boxY < particleY && particleY < (boxY + (6 - getMeteriodSize(boxes[i].value))*20)) {
+            if (boxX < particleX && particleX < (boxX + (getMeteriodSize(boxes[i].value))*20) && boxY < particleY && particleY < (boxY + ( getMeteriodSize(boxes[i].value))*20)) {
                 boxes[i].value = boxes[i].value - particles[j].value;
+                boxes[i].damageBlastList.push({
+                    damageX: particleX,
+                    damageY: particleY,
+                    animateIndex: 6
+                });
                 particles.splice(j, 1);
                 particlesLength--;
                 j--;
@@ -287,8 +298,10 @@ class Particle {
             ctx.fill();
             context.globalAlpha = 1.0;
             context.stroke();
-        } else {
-            ctx.drawImage(sprite, 856, 421, 9, 54, this.x - 2.5, this.y, 5, 20);
+        } else if (this.color === 'red') { 
+            ctx.drawImage(redBulletWebElemnt, 0, 0, 15, 51, this.x - 2.5, this.y, 5, 20);
+        }else {
+            ctx.drawImage(sprite, 856, 421, 9, 54, this.x - 2.5, this.y, 2, 10);
         }
 
 
@@ -306,49 +319,34 @@ class Particle {
 
 class SpaceShip {
     constructor() {
-    }
-    update() {
+        this.width = 50;
+        this.height = 28;
+        this.exhaustWidth = 5 ;
+        this.exhaustHeight = 10 ;
+        this.startX=mouse.x - (this.width/2);
+        this.startY=mouse.y ;
+        this.exaustCounter = 0;
+        // this.endX=;
+        // this.endY=;
     }
     draw() {
-        if (powerPlay) {
-            document.getElementById("popup").style = "display: block;animation:fade 3000ms;-webkit-animation:fade 3000ms;";
-    
-            // display spaceship
-            ctx.drawImage(shipWebElement, 0, 0, 112, 75, mouse.x - 25, mouse.y - 80, 50, 28);
-    
-            
-            // displayt fire exaust
-            if(fireAnimateToggle){
-                ctx.drawImage(sprite, 831, 0, 14, 31, mouse.x - 8, mouse.y - 25, 16, 15);
-            }else{
-                ctx.drawImage(sprite, 834, 299, 14, 31, mouse.x - 8, mouse.y - 25, 16, 20);
-            }
-    
-        } else {
-    
-            document.getElementById("popup").style = "display: none;";
-    
-             // display spaceship
-             ctx.drawImage(shipWebElement, 0, 0, 112, 75, mouse.x - 25, mouse.y - 80, 50, 28);
-    
-    
-            
-            // displayt fire exaust
-            if(exaustCounter < 5){
-                ctx.drawImage(sprite, 831, 0, 14, 31, mouse.x - 8, mouse.y - 25, 16, 15);
-                exaustCounter++;
-            }else if (exaustCounter <10){
-                ctx.drawImage(sprite, 834, 299, 14, 31, mouse.x - 8, mouse.y - 25, 16, 20);
-                exaustCounter++;
-            }else{
-                exaustCounter=0;
-            }
-    
-            fireAnimateToggle=!fireAnimateToggle;
-    
-            // draw_tank(ctx, 10, 10);
-    
+        this.startX=mouse.x - (this.width/2);
+        this.startY=mouse.y ;
+     
+        // display spaceship
+        ctx.drawImage(shipWebElement, 0, 0, 112, 75, this.startX, this.startY, this.width, this.height);
+
+        // displayt fire exaust
+        if(this.exaustCounter < 5){
+            ctx.drawImage(sprite, 831, 0, 14, 31, mouse.x - (this.exhaustWidth/2), mouse.y + this.height, this.exhaustWidth, this.exhaustHeight+4);
+            this.exaustCounter++;
+        }else if (this.exaustCounter <10){
+            ctx.drawImage(sprite, 834, 299, 14, 31, mouse.x - (this.exhaustWidth/2), mouse.y + this.height, this.exhaustWidth, this.exhaustHeight);
+            this.exaustCounter++;
+        }else{
+            this.exaustCounter=0;
         }
+
         
     }
 }
@@ -364,6 +362,7 @@ class Box {
         this.speedY = 1;
         this.ang = 0
         this.rotationSpeed = Math.random() > 0.5 ? -5*Math.random() : 5*Math.random() ;
+        this.damageBlastList=[];
     }
     generateValue(){
         let tmp = boxMaxValue;
@@ -376,45 +375,67 @@ class Box {
         this.y += this.speedY;
     }
     draw() {
+        
+        //draw meteor
+        let size = getMeteriodSize(this.value);
+
         // draw health
 
         ctx.globalAlpha = 0.5;
         ctx.fillStyle = "grey";
-        ctx.fillRect(this.x, this.y, 10, 5);
+        ctx.fillRect(this.x - healthBarOffsetX, this.y - healthBarOffsetY, 7, 2);
         ctx.fillStyle = "hsl(110, 100%, 30%)";
-        ctx.fillRect(this.x, this.y, 10 - (10 * (this.initHealth-this.value)/this.initHealth), 5);
+        ctx.fillRect(this.x - healthBarOffsetX, this.y - healthBarOffsetY, 7 - (7 * (this.initHealth - this.value) / this.initHealth), 2);
 
         ctx.globalAlpha = 1.0;
         ctx.stroke();
 
 
-        //draw meteor
-        let size = getMeteriodSize(this.value);
-
         ctx.save()
-        var pos = {x: (this.x + (6-size)*10), y: (this.y + (6-size)*10)}
+        var pos = {x: (this.x + (size)*10), y: (this.y + (size)*10)}
         ctx.translate(pos.x ,pos.y)    
         ctx.rotate(Math.PI / 180 * (this.ang += this.rotationSpeed))
         
-        if(size === 5){
-            ctx.drawImage(sprite, 0, 520, 120, 98, -(6-size)*10, -(6-size)*10, (6-size)*20, (6-size)*20);
-        }else if(size === 4){
-            ctx.drawImage(sprite, 518, 810, 89, 82, -(6-size)*10, -(6-size)*10, (6-size)*20, (6-size)*20);
-        }else if(size === 3){
-            ctx.drawImage(sprite, 327, 452, 98, 96, -(6-size)*10, -(6-size)*10, (6-size)*20, (6-size)*20);
-        }else if(size === 2){
-            ctx.drawImage(sprite, 0, 520, 120, 98, -(6-size)*10, -(6-size)*10, (6-size)*20, (6-size)*20);
-        }else{
-            ctx.drawImage(meteor, 0, 0, 98, 96, -(6-size)*10,-(6-size)*10, (6-size)*20, (6-size)*20);
-        }
+        if (size === 5) {
 
+            ctx.drawImage(sprite, 0, 520, 120, 98, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+        } else if (size === 4) {
+
+            ctx.drawImage(sprite, 518, 810, 89, 82, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+        } else if (size === 3) {
+
+            ctx.drawImage(sprite, 327, 452, 98, 96, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+        } else if (size === 2) {
+           
+            ctx.drawImage(sprite, 0, 520, 120, 98, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+        } else {
+            ctx.drawImage(meteor, 0, 0, 98, 96, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+        }
 
         ctx.restore()
 
-        
+        this.blastParticles = this.damageBlastList.forEach((damageCoordinates, index, arr) => {
+            
+            if(damageCoordinates.animateIndex>0){
+                drawSpriteFrame(explosionWebElemnt,damageCoordinates.animateIndex,6,
+                    {x:damageCoordinates.damageX,
+                     y:damageCoordinates.damageY,
+                     width:size*5,
+                     height:size*5});
+            }
+            arr[index] = {...damageCoordinates,animateIndex : damageCoordinates.animateIndex-1};
+          })
 
         this.update();
     }
+}
+
+const drawSpriteFrame = (spriteElement,frame,maxFrame,coordinates) => {
+
+    const frameWidth = spriteElement.width/maxFrame;
+    const frameHeight = spriteElement.height;
+    ctx.drawImage(spriteElement, (frame-1)*frameWidth, 0, frame*frameWidth, frameHeight,
+                 coordinates.x-(coordinates.width/2),coordinates.y,coordinates.width ,coordinates.height );
 }
 
 getMeteriodSize = (value) => {
@@ -431,7 +452,6 @@ getMeteriodSize = (value) => {
     return tmpSize;
 }
 
-
 function drawCircle() {
     ctx.fillStyle = 'blue';
     ctx.beginPath();
@@ -444,7 +464,7 @@ resetGame = () => {
     boxes = [];
     mouse = {
         x: window.innerWidth / 2,
-        y: ctx.canvas.height -20
+        y: ctx.canvas.height -80
     }
     boxMinValue = 1;
     boxMaxValue = 5;
@@ -468,15 +488,19 @@ const meteor = document.getElementById("meteor");
 const canvasElement = document.getElementById("myCanvas");
 const background = document.getElementById("background");
 const swipeInstruction = document.getElementById("swipeInstruction");
+const redBulletWebElemnt = document.getElementById("red-bullet");
+const explosionWebElemnt = document.getElementById("explosion");
+
 
 const ctx = canvasElement.getContext("2d");
 canvasElement.width = window.innerWidth;
 canvasElement.height = window.innerHeight;
 let particles = [];
 let boxes = [];
+//to be overriden in reset method
 let mouse = {
-    x: window.innerWidth / 2,
-    y: ctx.canvas.height - 20
+    x: 0,
+    y: 0
 }
 let boxMinValue = 1;
 let boxMaxValue = 5;
@@ -491,36 +515,17 @@ let moveRightFlag = false;
 let moveLeftFlag = false;
 let isAnimate = false;
 //user for animating ship's exaust 
-let exaustCounter = 0;
 let backgroundAnimationY = -256;
 //make it true for swipe instruction
 let controllerIntructionFlag = window.localStorage.getItem("controllerIntructionFlag") || false;
 
+//meteor health bar
+const healthBarOffsetX=10;
+const healthBarOffsetY=10;
+
 //construct Space Ship
 
 const spaceShip = new SpaceShip();
-
-// const initSpaceShip = (e) => {
-
-//     controllerIntructionFlag = false;
-//     mouse.x = e.touches[0].clientX;
-//     mouse.y = e.touches[0].clientY-50;
-//     // if (gameOverFlag &&
-//     //     (ctx.canvas.width / 2 - 90) < mouse.x && (ctx.canvas.width / 2 + 60) > mouse.x &&
-//     //     (ctx.canvas.height / 2 + 75) < mouse.y && (ctx.canvas.height / 2 + 125) > mouse.y) {
-//     //     resetGame();
-//     //     requestAnimationFrame(animate);
-//     // }
-//     //if(powerPlay){
-//     //  particles.push(new Particle(event.x, window.innerHeight-50, 0, 10, 100, 'red'));
-//     //}else{
-//     //  particles.push(new Particle(event.x, window.innerHeight-50, 0, 10, 1, 'blue'));
-//     //}
-// }
-// // document.getElementById("startPopup").height=width.innerHeight;
-
-// canvasElement.addEventListener("touchmove", initSpaceShip);
-
 
 restartPopup.addEventListener("click", function (event) {
     
@@ -594,23 +599,6 @@ const controllerButtonUnPressed = () => {
 }
 
 
-// const startGame = () => {
-//     ctx.fillStyle = "#DDE";
-//     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-//     ctx.save();
-//     ctx.fillStyle = "#DDE";
-//     ctx.fillRect(ctx.canvas.width / 2 - 175, (ctx.canvas.height / 2) + 150, 310, 110);
-//     ctx.stroke();
-//     ctx.globalAlpha = 0.5;
-//     ctx.fillStyle = "white";
-//     ctx.fillRect(ctx.canvas.width / 2 - 180, (ctx.canvas.height / 2) + 150, 300, 100);
-//     ctx.globalAlpha = 1.0;
-//     ctx.stroke();
-//     ctx.fillStyle = "black";
-//     ctx.fillText('Start', ctx.canvas.width / 2 - 115, (ctx.canvas.height / 2) + 220);
-//     ctx.stroke();
-// }
-
 // startGame();
 setInterval(() => {
     if(isAnimate){
@@ -622,26 +610,19 @@ setInterval(() => {
 setInterval(() => {
     if(isAnimate){
         if (powerPlay) {
-            particles.push(new Particle(mouse.x, mouse.y - 100, 0, 10, 100, 'yellow'));
+            particles.push(new Particle(mouse.x, mouse.y , 0, 10, 100, 'red'));
         } else {
-            particles.push(new Particle(mouse.x, mouse.y - 100, 0, 10, 1, 'blue'));
+            particles.push(new Particle(mouse.x, mouse.y , 0, 10, 1, 'blue'));
         }
         
         isAnimate=false;
     }
     
 }, shootSpeed);
-//let powerModeEmitter = setInterval(() => {
-//    powerPlay=!powerPlay;
-//}, 3000);
 
 let audio = new Audio('img/space-asteroids.mp3');
 audio.volume=0.3;
 audio.loop = true;
-
-
-
-   
 
 const playTrack= ()=> {
     audio.play().then(x=>playTrack())
