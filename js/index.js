@@ -186,11 +186,12 @@ animate = () => {
                 score++;
                 if (boxes[i].value === 0 || boxes[i].value < 0) {
                     if(boxes[i].isDistroyed){
-                        blastBox(boxes[i]);
+                        
                         boxes.splice(i, 1);
                         boxesLength--;
                         break;
                     }else{
+                        blastBox(boxes[i]);
                         boxes[i].distroySequence=true;
                         score--;
                         break;
@@ -207,7 +208,7 @@ animate = () => {
             boxes[i].draw();
         }
 
-        if (boxes[i] && boxes[i].y > ctx.canvas.height*0.5) {
+        if (boxes[i] && boxes[i].y > ctx.canvas.height*0.7) {
             powerPlay = true;
         }
 
