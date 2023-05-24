@@ -295,17 +295,27 @@ const drawSpriteFrame = (spriteElement,frame,maxFrame,coordinates) => {
                  coordinates.x-(coordinates.width/2),coordinates.y,coordinates.width ,coordinates.height );
 }
 
+const draw2DSpriteFrame = (sprite2DElement,frame, frameRow, frameWidth,frameHeight,coordinates) => {
+ 
+    const frameXorigin =  (frame-1)*frameWidth;
+    const frameYorigin =  (frameRow-1)*frameHeight;
+
+    ctx.drawImage(sprite2DElement, frameXorigin, frameYorigin, frameWidth, frameHeight,
+                 coordinates.x,coordinates.y,coordinates.width ,coordinates.height );
+}
+
 getMeteriodSize = (value) => {
-    let tmpSize = 1;
+    let tmpSize = 2;
     if(value>100){
         tmpSize = 5;
     }else if(value>60){
         tmpSize = 4;
     }else if(value>35){
         tmpSize = 3;        
-    }else if(value>20){
-        tmpSize = 2;
     }
+    // else if(value>20){
+    //     tmpSize = 2;
+    // }
     return tmpSize;
 }
 
@@ -349,6 +359,7 @@ const swipeInstruction = document.getElementById("swipeInstruction");
 const redBulletWebElemnt = document.getElementById("red-bullet");
 const explosionWebElemnt = document.getElementById("explosion");
 const afterBlastParticleWebElemnt = document.getElementById("sun");
+const flameFireWebElemnt = document.getElementById("flame_fire");
 
 
 

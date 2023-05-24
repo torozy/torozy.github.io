@@ -12,8 +12,9 @@ class Box {
         this.rotationSpeed = Math.random() > 0.5 ? -5*Math.random() : 5*Math.random() ;
         this.damageBlastList=[];
         this.distroySequence = false;
-        this.distroySequenceFrame = 6;
+        this.distroySequenceFrame = 12;
         this.isDistroyed = false;
+        this.flameFireFrame = 6;
     }
     generateValue(){
         let tmp = boxMaxValue;
@@ -40,6 +41,20 @@ class Box {
 
             ctx.globalAlpha = 1.0;
             ctx.stroke();
+
+            if (this.flameFireFrame >= 1) {
+                draw2DSpriteFrame(flameFireWebElemnt, this.flameFireFrame, 3, 128, 126,
+                    {
+                        x: this.x -(size * 40),
+                        y: this.y-(size * 70),
+                        width: size * 100,
+                        height: size * 100
+                    });
+
+                this.flameFireFrame--;
+            } else {
+                this.flameFireFrame = 6;
+            }
 
 
             ctx.save()
@@ -83,7 +98,7 @@ class Box {
         } else {
             if (this.distroySequenceFrame > 0) {
                 let pos = { x: (this.x + (size) * 10), y: (this.y + (size) * 10) }
-                drawSpriteFrame(explosionWebElemnt,this.distroySequenceFrame , 6,
+                drawSpriteFrame(explosionWebElemnt,(this.distroySequenceFrame%2 ===0)? this.distroySequenceFrame/2 : (this.distroySequenceFrame+1)/2  , 6,
                     {
                         x: pos.x,
                         y: pos.y,
