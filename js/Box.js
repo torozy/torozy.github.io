@@ -63,19 +63,24 @@ class Box {
             ctx.rotate(Math.PI / 180 * (this.ang += this.rotationSpeed))
 
             if (size === 5) {
+                ctx.drawImage(sprite, 327, 452, 98, 96, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
 
-                ctx.drawImage(sprite, 0, 520, 120, 98, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+                // ctx.drawImage(sprite, 282, 452, 45, 40, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+                // ctx.drawImage(sprite, 0, 520, 120, 98, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
             } else if (size === 4) {
-
+                // ctx.drawImage(sprite, 282, 452, 45, 40, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
                 ctx.drawImage(sprite, 518, 810, 89, 82, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
             } else if (size === 3) {
-
-                ctx.drawImage(sprite, 327, 452, 98, 96, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+                ctx.drawImage(sprite, 224, 664, 101, 84, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+                
             } else if (size === 2) {
-
-                ctx.drawImage(sprite, 0, 520, 120, 98, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+                ctx.drawImage(sprite, 518, 810, 89, 82, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+               
+                // ctx.drawImage(sprite, 237, 452, 45, 40, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+                // ctx.drawImage(sprite, 0, 520, 120, 98, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
             } else {
-                ctx.drawImage(meteor, 0, 0, 98, 96, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+                ctx.drawImage(sprite, 224, 664, 101, 84, -(size) * 10, -(size) * 10, (size) * 20, (size) * 20);
+
             }
 
             ctx.restore()
