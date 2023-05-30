@@ -133,7 +133,7 @@ animate = () => {
             ctx.drawImage(background, 0, 0,background.width,background.height,bgx,bgy,background.width,background.height);
         }   
     }
-    backgroundAnimationY++;
+    backgroundAnimationY=backgroundAnimationY+0.5;
 
     }else{
         for(let bgy = backgroundAnimationY; bgy < ctx.canvas.height ;bgy = bgy+background.height){
@@ -186,12 +186,12 @@ animate = () => {
                 score++;
                 if (boxes[i].value === 0 || boxes[i].value < 0) {
                     if(boxes[i].isDistroyed){
-                        
+                        blastBox(boxes[i]);
                         boxes.splice(i, 1);
                         boxesLength--;
                         break;
                     }else{
-                        blastBox(boxes[i]);
+                        
                         boxes[i].distroySequence=true;
                         score--;
                         break;
